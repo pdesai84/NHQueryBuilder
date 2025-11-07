@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <PlatformTarget>x64</PlatformTarget>
+      <OutputType>Exe</OutputType>
+      <TargetFramework>net8.0</TargetFramework>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NHQueryBuilder.DatabaseSetup\NHQueryBuilder.DatabaseSetup.csproj" />
+    <ProjectReference Include="..\NHQueryBuilder\NHQueryBuilder.csproj" />
+  </ItemGroup>
+
+</Project>
