@@ -1,63 +1,20 @@
-﻿# NHQueryBuilder
+# NHQueryBuilder
 
 **NHQueryBuilder** is a fluent, strongly-typed query builder for **NHibernate** that simplifies building complex queries in .NET.  
-It provides a modern, expressive API for filtering, ordering, projections, pagination, and more — all type-safe and fully integrated with NHibernate.
-
----
-
-## Quick Example
-
-### Traditional NHibernate Query
-```csharp
-var criteria = session.CreateCriteria<ObjectLink>()
-    .CreateAlias("RightAttachment.Type", "blobType")
-    .Add(Restrictions.In("blobType.Code", new[] { "PDF", "Q" }))
-    .Add(Restrictions.IsNotNull("LeftOrderProcedure"))
-    .SetMaxResults(10);
-````
-
-### With NHQueryBuilder
-
-```csharp
-var cond = new FluentConditions<ObjectLink>()
-    .IsIn(x => x.RightAttachment.Type.Code, new[] { "PDF", "Q" })
-    .IsNotNull(x => x.LeftOrderProcedure)
-    .Take(10);
-
-var results = session.GetList(cond);
-```
-
-- Strongly typed
-- Fluent and clean syntax
-- No magic strings
-- Fully compatible with NHibernate
+It provides a modern, expressive API for filtering, ordering, projections, pagination, and more � all type-safe and fully integrated with NHibernate.
 
 ---
 
 ## Key Features
 
-* **Fluent API for Query Construction** – Chain readable, type-safe methods.
-* **Comprehensive Condition Support** – `Equal`, `NotEqual`, `IsIn`, `Between`, `Like`, `IsNull`, `GreaterThan`, `LessThan`, etc.
-* **Ordering & Pagination** – `OrderByAscending`, `OrderByDescending`, `Skip`, `Take`.
-* **Projections (Select)** – Fetch only specific fields or map to DTOs.
-* **Joins (Fetch)** – Eagerly load related entities.
-* **Count Queries** – Get total record counts for conditions.
-* **Integrated with NHibernate** – Works seamlessly with `ISession`.
-* **Extensible Design** – Easily add new SQL functions or logic.
-
----
-
-## Installation
-
-Install via NuGet:
-
-```bash
-dotnet add package NHQueryBuilder
-```
-
-Or via Visual Studio:
-
-**Project → Manage NuGet Packages → Browse → "NHQueryBuilder"**
+* **Fluent API for Query Construction** - Chain readable, type-safe methods.
+* **Comprehensive Condition Support** - `Equal`, `NotEqual`, `IsIn`, `Between`, `Like`, `IsNull`, `GreaterThan`, `LessThan`, etc.
+* **Ordering & Pagination** - `OrderByAscending`, `OrderByDescending`, `Skip`, `Take`.
+* **Projections (Select)** - Fetch only specific fields or map to DTOs.
+* **Joins (Fetch)** - Eagerly load related entities.
+* **Count Queries** - Get total record counts for conditions.
+* **Integrated with NHibernate** - Works seamlessly with `ISession`.
+* **Extensible Design** - Easily add new SQL functions or logic.
 
 ---
 
@@ -71,6 +28,7 @@ public class Author
     public virtual int Key { get; set; }
     public virtual string Name { get; set; }
     public virtual string Country { get; set; }
+    public virtual string Nationality { get; set; }
     public virtual IList<Book> Books { get; set; }
 }
 
@@ -87,6 +45,7 @@ public class Book
 ```csharp
 var cond = new FluentConditions<Author>()
     .Equal(x => x.Country, "India")
+    .IsIn(x => x.Nationality, new[] { "American", "Indian", "Canadian" })
     .IsNotNull(x => x.Name)
     .OrderByAscending(x => x.Name)
     .Skip(10)
@@ -102,11 +61,23 @@ cond.Select(x => new { x.Key, x.Name });
 var results = session.GetProjectedList(cond);
 ```
 
+### Use transformer to map the results
+
+```csharp
+cond.Select(x => new { x.Key, x.Name, x.Email });
+var books = cs.GetProjectedList<Author, SimpleResult>(cond);
+
+// Another way
+FluentConditions<Book> conditions = new FluentConditions<Book>();
+conditions.GreaterThan(x => x.Key, 10);
+conditions.Select(x => x.Author);
+var books = session.GetProjectedList<Book, Author>(conditions);
+```
+
 ### Use OR Conditions
 
 ```csharp
-cond.Equal(x => x.Country, "India")
-    .OR.Equal(x => x.Country, "Belgium");
+cond.Equal(x => x.Country, "India").OR.Equal(x => x.Country, "Belgium");
 ```
 
 ---
@@ -136,7 +107,7 @@ NHQueryBuilder includes **NUnit-based tests** and **example projects** demonstra
 * Executing projections
 * Applying pagination and sorting
 
-See `/examples` and `/tests` folders in the GitHub repository.
+See `NHQueryBuilder.Example` and `NHQueryBuilder.UnitTest` projects in the GitHub repository.
 
 ---
 
@@ -148,20 +119,20 @@ We'd love to hear your thoughts and feedback!
 * **Report an Issue:** [Report a bug or request a feature](https://github.com/pdesai84/NHQueryBuilder/issues)
 * **GitHub Repository:** [Visit NHQueryBuilder on GitHub](https://github.com/pdesai84/NHQueryBuilder)
 
-If you find this project useful, please ⭐ **star the repository** to show your support!
+If you find this project useful, please **star the repository** to show your support!
 
 ---
 
 ## License
 
 This project is licensed under the **MIT License**.
-See the [LICENSE](https://github.com/pdesai84/NHQueryBuilder/blob/main/LICENSE) file for details.
+See the [LICENSE](https://github.com/pdesai84/NHQueryBuilder/blob/main/LICENSE.txt) file for details.
 
 ---
 
 ### Acknowledgements
 
-Built for the NHibernate community — simplifying advanced queries, one fluent line at a time.
+Built for the NHibernate community - simplifying advanced queries, one fluent line at a time.
 
 ---
 
@@ -169,7 +140,7 @@ Built for the NHibernate community — simplifying advanced queries, one fluent 
 
 | Metadata            | Value                                                                                            |
 | ------------------- | ------------------------------------------------------------------------------------------------ |
-| **Authors**         | Parth Desai                                                                                      |
+| **Authors**         | Prahsant Desai                                                                                      |
 | **Project URL**     | [https://github.com/pdesai84/NHQueryBuilder](https://github.com/pdesai84/NHQueryBuilder)         |
 | **License**         | MIT                                                                                              |
 | **Tags**            | NHibernate, QueryBuilder, Fluent, ORM, SQL, LINQ, C#, .NET                                       |
