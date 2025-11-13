@@ -45,7 +45,7 @@ public class Book
 ```csharp
 var cond = new FluentConditions<Author>()
     .Equal(x => x.Country, "India")
-    .In(x => x.Nationality, new[] { "American", "Indian", "Canadian" })
+    .IsIn(x => x.Nationality, new[] { "American", "Indian", "Canadian" })
     .IsNotNull(x => x.Name)
     .OrderByAscending(x => x.Name)
     .Skip(10)
